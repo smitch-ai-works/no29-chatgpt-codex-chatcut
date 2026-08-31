@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ChatCut 話すだけ編集キット｜ChatGPTから動画編集を自動化する3ステップ</title>
+<meta name="description" content="パソコン版ChatGPT（Codex）にChatCutをつないで、カット・テロップ・AI映像・BGMまで文章で頼む手順。導入3ステップ、そのまま貼れる編集指示のプロンプト、任せてはいけない工程の見分け方、AI時代の頼み方5か条つき。">
+<style>
+/* ===== すみっち共通ブロック（sk kit / 2026-08） =====
+   配色・幅・角丸・フォントは全て --sk-* 変数。
+   ページごとの THEME で上書きして、元のデザインに馴染ませる。 */
+:root{
+ --sk-ink:#242130; --sk-muted:#6E6878;
+ --sk-accent:#4A3F68; --sk-accent2:#6F5F96;
+ --sk-line:#E5E0EB; --sk-page:#FCFBFE; --sk-card:#FFFFFF;
+ --sk-surface:#F7F5FB; --sk-soft:#EEEAF8;
+ --sk-warm:#FFF3EF; --sk-warm-bd:#F0CBC0; --sk-warm-ink:#68433A; --sk-warm-b:#B24826;
+ --sk-dark1:#242130; --sk-dark2:#33475D; --sk-hl:#FFD9CB;
+ --sk-green:#06C755;
+ --sk-radius:22px; --sk-radius-sm:16px;
+ --sk-wrap:660px;
+ --sk-shadow:0 12px 34px rgba(0,0,0,.07);
+ --sk-font:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+ --sk-serif:var(--sk-font);
+}
+/* 親が display:flex / grid のページでも潰れないようにする。
+   また、ページ側が *{box-sizing:border-box} を持たない場合に
+   padding分だけ横へはみ出すため、ここで明示的に指定する。 */
+.sk-author-strip,.sk-sec,.sk-gap,.sk-cta,.sk-footer{width:100%;max-width:100%;flex:0 0 100%;
+ grid-column:1/-1;align-self:stretch;display:block;box-sizing:border-box}
+.sk-author-strip *,.sk-sec *,.sk-gap *,.sk-cta *,.sk-footer *,
+.sk-author-strip *:before,.sk-sec *:before,.sk-gap *:before,.sk-cta *:before,.sk-footer *:before,
+.sk-author-strip *:after,.sk-sec *:after,.sk-gap *:after,.sk-cta *:after,.sk-footer *:after{box-sizing:border-box}
+.sk-sec{font-family:var(--sk-font);line-height:1.85;color:var(--sk-ink);background:var(--sk-page);
+ padding:56px 16px;margin:0;text-align:left;font-size:16px;font-weight:400}
+.sk-wrap{width:min(var(--sk-wrap),100%);margin:0 auto}
+.sk-head{text-align:center;margin-bottom:26px}
+.sk-kicker{display:block;font-size:12px;font-weight:900;letter-spacing:.18em;color:var(--sk-accent2)}
+.sk-sec h2.sk-h,.sk-gap h2.sk-h,.sk-cta h2.sk-h{font-family:var(--sk-serif);
+ font-size:clamp(24px,4.2vw,34px);line-height:1.4;margin:8px 0 0;color:inherit;font-weight:700;letter-spacing:-.01em}
+.sk-br{display:none}
+/* -- 著者カード -- */
+.sk-author-strip{padding:18px 16px;background:var(--sk-surface);border-bottom:1px solid var(--sk-line);
+ font-family:var(--sk-font)}
+.sk-author{display:flex;align-items:center;gap:14px;width:min(420px,100%);margin:0 auto;padding:10px 14px;
+ border-radius:var(--sk-radius-sm);background:var(--sk-card);border:1px solid var(--sk-line);
+ text-decoration:none;color:var(--sk-ink);box-shadow:var(--sk-shadow);
+ transition:transform .2s ease,box-shadow .2s ease}
+.sk-author:hover{transform:translateY(-2px)}
+.sk-author img{width:52px;height:52px;flex:none;border-radius:50%;background:#fff;display:block}
+.sk-author-txt{min-width:0}
+.sk-author-role,.sk-author-name,.sk-author-id{display:block}
+.sk-author-role{font-size:11px;color:var(--sk-muted);line-height:1.5}
+.sk-author-name{font-weight:900;font-size:16px;line-height:1.45;color:var(--sk-ink)}
+.sk-author-id{font-size:11px;color:var(--sk-muted);font-weight:400;line-height:1.5}
+.sk-author-arrow{margin-left:auto;color:var(--sk-muted);opacity:.6;font-weight:900;font-size:18px}
+/* -- 疑問3連 -- */
+.sk-doubt-lead{margin:0 auto 22px;text-align:center;color:var(--sk-muted);font-size:15px;line-height:1.9}
+.sk-doubts{display:grid;gap:11px}
+.sk-doubt{display:flex;gap:13px;align-items:flex-start;background:var(--sk-card);border:1px solid var(--sk-line);
+ border-radius:var(--sk-radius-sm);padding:15px 18px;box-shadow:var(--sk-shadow)}
+.sk-doubt .sk-no{flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+ background:var(--sk-soft);color:var(--sk-accent);font-weight:900;font-size:12px}
+.sk-doubt p{margin:0;font-size:15px;line-height:1.8}
+.sk-answer{margin:18px 0 0;padding:19px 22px;border-left:5px solid var(--sk-accent2);background:var(--sk-soft);
+ border-radius:0 var(--sk-radius-sm) var(--sk-radius-sm) 0;font-size:14.5px;line-height:1.95}
+.sk-answer strong{color:var(--sk-accent)}
+.sk-answer .sk-n{font-weight:900;color:var(--sk-accent2)}
+/* -- 断絶 -- */
+.sk-gap{background:linear-gradient(160deg,var(--sk-dark1) 0%,var(--sk-dark2) 100%);color:#fff;
+ padding:64px 16px;font-family:var(--sk-font);line-height:1.85;font-size:16px}
+.sk-gap h2.sk-h{color:#fff}
+.sk-gap .sk-kicker{color:var(--sk-hl);opacity:.9}
+.sk-gap-lead{margin:0 auto;font-size:clamp(15.5px,2.2vw,17.5px);line-height:2;
+ color:rgba(255,255,255,.87);text-align:center}
+.sk-gap-lead strong{color:var(--sk-hl)}
+.sk-gap-list{width:min(560px,100%);margin:26px auto 0;list-style:none;padding:20px 22px;
+ background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+ border-radius:var(--sk-radius);display:grid;gap:12px}
+.sk-gap-list li{display:flex;gap:12px;font-size:14.5px;color:rgba(255,255,255,.9);line-height:1.7}
+.sk-gap-list li:before{content:"\25B8";color:var(--sk-hl);font-weight:900;flex:none}
+.sk-gap-close{margin:22px auto 0;color:rgba(255,255,255,.72);font-size:14.5px;text-align:center}
+/* -- ストーリー -- */
+.sk-story{width:min(620px,100%);margin:46px auto 0;background:var(--sk-card);color:var(--sk-ink);
+ border-radius:var(--sk-radius);padding:34px 28px 26px;box-shadow:0 24px 60px rgba(0,0,0,.28);position:relative}
+.sk-story-tag{position:absolute;top:-16px;left:50%;transform:translateX(-50%);white-space:nowrap;
+ background:var(--sk-dark1);color:#fff;border:4px solid var(--sk-card);border-radius:999px;
+ padding:6px 18px;font-weight:900;font-size:13px}
+.sk-story p{margin:0 0 14px;font-size:15px;line-height:1.9}
+.sk-story p:last-child{margin-bottom:0}
+.sk-punch{font-size:clamp(17px,2.8vw,20px);font-weight:900;line-height:1.7;color:var(--sk-accent);
+ border-bottom:3px solid var(--sk-soft);display:inline;padding-bottom:2px}
+.sk-habit{background:var(--sk-warm);border-left:5px solid var(--sk-warm-b);
+ border-radius:0 var(--sk-radius-sm) var(--sk-radius-sm) 0;
+ padding:15px 18px;color:var(--sk-warm-ink);font-size:14.5px;line-height:1.85}
+.sk-habit b{color:var(--sk-warm-b)}
+/* -- オファー＋CTA -- */
+.sk-cta{background:var(--sk-surface);padding:60px 16px 56px;font-family:var(--sk-font);
+ line-height:1.85;font-size:16px;color:var(--sk-ink)}
+.sk-bridge{margin:0 auto 22px;text-align:center;color:var(--sk-ink);opacity:.86;
+ font-size:clamp(15px,2.2vw,17px);font-weight:700;line-height:1.95}
+.sk-offer{width:min(560px,100%);margin:0 auto 24px;background:var(--sk-card);border:1px solid var(--sk-line);
+ border-radius:var(--sk-radius);padding:30px 24px;box-shadow:var(--sk-shadow);position:relative}
+.sk-offer-badge{position:absolute;top:-13px;right:18px;background:var(--sk-warm-b);color:#fff;font-weight:900;
+ font-size:12px;padding:6px 14px;border-radius:999px}
+.sk-offer h3{margin:0 0 18px;text-align:center;font-family:var(--sk-serif);
+ font-size:clamp(21px,3.6vw,27px);font-weight:700;line-height:1.4;color:var(--sk-ink)}
+.sk-cover{width:min(320px,100%);margin:0 auto 20px}
+.sk-cover img{width:100%;border-radius:12px;display:block}
+.sk-toc{background:var(--sk-surface);border:1px solid var(--sk-line);border-radius:var(--sk-radius-sm);padding:20px 22px}
+.sk-toc-head{text-align:center;font-weight:900;font-size:14px;padding-bottom:11px;margin:0 0 6px;
+ border-bottom:1px solid var(--sk-line);color:var(--sk-ink)}
+.sk-toc ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.sk-toc li{display:flex;gap:10px;font-size:14px;line-height:1.7;color:var(--sk-ink)}
+.sk-toc li:before{content:"\25C6";color:var(--sk-accent2);flex:none}
+.sk-toc li b{flex:none;white-space:nowrap;min-width:3.6em}
+.sk-offer-close{margin:20px 0 0;font-size:14px;color:var(--sk-muted);line-height:1.9}
+.sk-offer-close strong{color:var(--sk-accent)}
+.sk-line-btn{display:flex;flex-direction:column;align-items:center;gap:5px;width:min(560px,100%);margin:0 auto;
+ padding:19px 20px;border-radius:var(--sk-radius);background:var(--sk-green);color:#fff;font-weight:900;
+ text-decoration:none;box-shadow:0 16px 40px rgba(6,199,85,.30);position:relative;transition:transform .2s ease}
+.sk-line-btn:hover{transform:translateY(-3px)}
+.sk-line-btn:active{transform:translateY(0) scale(.99)}
+.sk-line-btn:after{content:"";position:absolute;inset:0;border-radius:inherit;
+ animation:skPulse 2.4s ease-out infinite;pointer-events:none}
+@keyframes skPulse{0%{box-shadow:0 0 0 0 rgba(9,126,42,.35)}70%{box-shadow:0 0 0 14px rgba(9,126,42,0)}
+ 100%{box-shadow:0 0 0 0 rgba(9,126,42,0)}}
+.sk-tap{font-size:12px;font-weight:800;background:rgba(255,255,255,.22);padding:3px 13px;border-radius:999px}
+.sk-btn-main{display:flex;align-items:center;gap:10px;font-size:clamp(17px,3vw,21px)}
+.sk-btn-main svg{width:24px;height:24px;flex:none}
+.sk-scarcity{width:min(560px,100%);margin:14px auto 0;padding:13px 16px;background:var(--sk-warm);
+ border:1px solid var(--sk-warm-bd);border-radius:var(--sk-radius-sm);color:var(--sk-warm-ink);
+ font-size:12.5px;line-height:1.85}
+.sk-note{text-align:center;color:var(--sk-muted);font-size:12px;margin:12px 0 0}
+/* -- コピー直後のひとこと（離脱ポイント対策）--
+   プロンプトをコピーした瞬間＝読者の目的達成。そこからCTAまで距離があるため、
+   その瞬間だけ画面下に小さく出す。押し売りにならないよう、
+   ページ側の配色を使い、8秒で自動的に消え、×で閉じられる。 */
+.sk-cue{position:fixed;left:50%;bottom:16px;z-index:99999;display:flex;align-items:center;gap:10px;
+ width:min(420px,calc(100% - 24px));padding:12px 14px;border-radius:14px;
+ background:var(--sk-dark1);color:#fff;font-family:var(--sk-font);font-size:13.5px;line-height:1.6;
+ box-shadow:0 14px 40px rgba(0,0,0,.34);text-decoration:none;
+ transform:translate(-50%,18px);opacity:0;pointer-events:none;
+ transition:opacity .28s ease,transform .28s ease}
+.sk-cue.is-on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.sk-cue b{color:var(--sk-hl)}
+.sk-cue .sk-cue-arrow{margin-left:auto;flex:none;font-weight:900;color:var(--sk-hl)}
+.sk-cue-x{position:absolute;top:-9px;right:-9px;width:24px;height:24px;border-radius:50%;border:0;
+ background:var(--sk-dark1);color:rgba(255,255,255,.8);font-size:14px;line-height:1;cursor:pointer;
+ box-shadow:0 4px 12px rgba(0,0,0,.3)}
+@media(prefers-reduced-motion:reduce){.sk-cue{transition:none}}
+/* -- フッター -- */
+.sk-footer{padding:40px 16px 56px;text-align:center;border-top:1px solid var(--sk-line);
+ background:var(--sk-surface);font-family:var(--sk-font);line-height:1.8}
+.sk-footer-ig{display:inline-flex;align-items:center;gap:9px;color:var(--sk-accent2);font-weight:850;
+ font-size:14px;text-decoration:none;margin-bottom:14px}
+.sk-footer-ig:hover{text-decoration:underline}
+.sk-footer-ig svg{width:19px;height:19px}
+.sk-footer p{margin:0 0 4px;font-size:13px;color:var(--sk-muted)}
+.sk-footer .sk-copy{margin:6px 0 0;font-size:11.5px;color:var(--sk-muted);opacity:.75}
+.sk-footer .sk-tagline{margin:0 0 12px;font-size:12px;color:var(--sk-muted);opacity:.85;letter-spacing:.03em}
+@media(prefers-reduced-motion:reduce){.sk-line-btn:after{animation:none}}
+@media(max-width:600px){
+ .sk-br{display:inline}
+ .sk-sec{padding:44px 14px}
+ .sk-gap{padding:48px 14px}
+ .sk-cta{padding:48px 14px 44px}
+ .sk-story{padding:28px 17px 22px;margin-top:38px}
+ .sk-story-tag{font-size:11.5px;padding:6px 14px}
+ .sk-offer{padding:24px 16px}
+ .sk-toc{padding:16px 14px}
+ .sk-gap-list{padding:17px 16px}
+ .sk-author{padding:9px 11px;gap:11px}
+ .sk-author img{width:46px;height:46px}
+ .sk-footer{padding:34px 14px 48px}
+}
+
+/* --- このページ用のテーマ上書き --- */
+:root{ --sk-ink:#1E2333; --sk-muted:#6B7285; --sk-accent:#1F5FBF; --sk-accent2:#C2410C; --sk-line:#E1E6F0; --sk-page:#FAFBFF; --sk-card:#FFFFFF; --sk-surface:#F1F4FB; --sk-soft:#E4EBFB; --sk-warm:#FFF7E6; --sk-warm-bd:#F0D9A8; --sk-warm-ink:#5A4520; --sk-warm-b:#B07A15; --sk-dark1:#111726; --sk-dark2:#1E3459; --sk-hl:#8FB6FF; --sk-radius:22px; --sk-radius-sm:16px; --sk-shadow:0 14px 38px rgba(30,35,51,.10); --sk-wrap:680px; --sk-font:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif; --sk-serif:"Noto Serif JP","Yu Mincho",serif; }
+
+/* ===== fresh kit（新規ページ用の本文ブロック） =====
+   ギャラリーの横スクロールが body 全体の横スクロールに漏れないよう、
+   このページ独自にリセットを持たせる（既存ページの reset に依存しない）。 */
+*,*::before,*::after{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+.fk-hero{position:relative;background:linear-gradient(160deg,var(--sk-dark1) 0%,var(--sk-dark2) 100%);
+ color:#fff;padding:52px 16px 44px;text-align:center;font-family:var(--sk-font);overflow:hidden}
+.fk-hero-bg{position:absolute;inset:0;z-index:0}
+.fk-hero-bg img{width:100%;height:100%;object-fit:cover;display:block}
+.fk-hero-bg::after{content:"";position:absolute;inset:0;
+ background:linear-gradient(180deg,rgba(10,12,16,.55) 0%,rgba(10,12,16,.72) 55%,rgba(10,12,16,.88) 100%)}
+.fk-hero-badge,.fk-hero h1,.fk-hero-sub,.fk-metrics{position:relative;z-index:1}
+.fk-hero-badge{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);
+ border-radius:999px;font-size:11.5px;letter-spacing:.14em;padding:5px 16px;margin-bottom:18px;
+ backdrop-filter:blur(2px)}
+.fk-hero h1{font-family:var(--sk-serif);font-size:clamp(24px,5.6vw,34px);font-weight:700;line-height:1.5;
+ margin:0 0 14px;text-shadow:0 2px 16px rgba(0,0,0,.4)}
+.fk-hero h1 em{font-style:normal;color:var(--sk-hl)}
+.fk-hero-sub{font-size:clamp(13.5px,2.6vw,15.5px);line-height:1.9;color:rgba(255,255,255,.9);
+ max-width:520px;margin:0 auto;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.fk-metrics{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin-top:22px}
+.fk-metrics span{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);border-radius:999px;
+ padding:6px 15px;font-size:12.5px}
+.fk-metrics span b{color:var(--sk-hl);font-weight:900;margin-right:3px}
+
+.fk-flow{padding:44px 16px 8px;font-family:var(--sk-font)}
+.fk-flow-diagram{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;
+ background:var(--sk-card);border:1px solid var(--sk-line);border-radius:var(--sk-radius);
+ padding:26px 16px;box-shadow:var(--sk-shadow);max-width:640px;margin:0 auto}
+.fk-flow-node{flex:1 1 120px;max-width:150px;text-align:center}
+.fk-flow-icon{display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+.fk-flow-icon-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+ background:var(--sk-soft);color:var(--sk-accent);font-weight:900;font-size:15px}
+.fk-flow-tool{font-size:11px;font-weight:900;color:var(--sk-accent2);letter-spacing:.02em}
+.fk-flow-name{font-size:12.5px;font-weight:700;color:var(--sk-ink);margin-top:1px}
+.fk-flow-arrow{flex:0 0 auto;font-size:1.3rem;color:var(--sk-line);font-weight:700;align-self:center}
+@media(max-width:600px){.fk-flow-diagram{flex-direction:column}.fk-flow-arrow{transform:rotate(90deg)}
+ .fk-flow-node{max-width:none}}
+
+.fk-steps{padding:48px 16px 8px;font-family:var(--sk-font)}
+.fk-steps-wrap{max-width:640px;margin:0 auto;position:relative}
+.fk-steps-wrap:before{content:"";position:absolute;left:23px;top:10px;bottom:10px;width:2px;
+ background:var(--sk-line)}
+.fk-step{position:relative;display:flex;gap:18px;padding-bottom:30px}
+.fk-step:last-child{padding-bottom:0}
+.fk-step-num{flex:0 0 48px;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;
+ justify-content:center;font-weight:900;font-size:17px;color:#fff;background:var(--sk-accent);
+ position:relative;z-index:1;box-shadow:var(--sk-shadow)}
+.fk-step-body{flex:1;min-width:0;background:var(--sk-card);border:1px solid var(--sk-line);
+ border-radius:var(--sk-radius-sm);padding:18px 20px;margin-top:2px}
+.fk-step-label{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:900;letter-spacing:.1em;
+ color:var(--sk-accent2);text-transform:uppercase;margin-bottom:4px}
+.fk-step-icon{display:inline-flex;flex:none}
+.fk-step-title{font-family:var(--sk-serif);font-size:17px;font-weight:700;margin-bottom:9px;color:var(--sk-ink)}
+.fk-step-text{font-size:14.5px;line-height:1.9;color:var(--sk-ink);margin-bottom:10px}
+.fk-step-text:last-child{margin-bottom:0}
+.fk-checklist{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.fk-checklist span{font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:999px;
+ background:var(--sk-surface);color:var(--sk-ink);border:1px solid var(--sk-line)}
+/* 折りたたみ式プロンプトボックス（2026-08-19〜）。長いプロンプトが常時全文
+   表示されるとページが間延びして最後まで読まれなくなる、との指摘で開閉式に変更。
+   コピーボタンはsummary内＝常に見える位置に置き、閉じたままコピーできるようにする。 */
+.fk-prompt{background:var(--sk-dark1);color:#E7E9EC;border-radius:12px;margin-top:12px;overflow:hidden}
+.fk-prompt-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 13px;
+ border-bottom:1px solid rgba(255,255,255,.13);font-size:11px;letter-spacing:.06em;cursor:pointer;
+ list-style:none}
+.fk-prompt-h::-webkit-details-marker{display:none}
+.fk-prompt-h>span:first-child{color:var(--sk-hl);font-weight:900;overflow:hidden;text-overflow:ellipsis;
+ white-space:nowrap}
+.fk-prompt-h-right{display:flex;align-items:center;gap:9px;flex:none}
+.fk-prompt-copy{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:999px;
+ padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer}
+.fk-prompt-arrow{color:rgba(255,255,255,.55);font-size:11px;transition:transform .2s ease}
+.fk-prompt[open] .fk-prompt-arrow{transform:rotate(180deg)}
+.fk-prompt pre{margin:0;padding:14px;font-size:12px;line-height:1.95;white-space:pre-wrap;
+ font-family:var(--sk-font);color:#DFE2E6}
+.fk-prompt pre i{font-style:normal;color:var(--sk-hl)}
+.fk-step-img{width:100%;border-radius:12px;margin-top:12px;overflow:hidden;border:1px solid var(--sk-line)}
+.fk-step-img img{width:100%;display:block}
+.fk-step-img-cap{font-size:11.5px;color:var(--sk-muted);text-align:center;padding:6px 4px 0}
+.fk-step-img-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+@media(max-width:520px){.fk-step-img-grid{grid-template-columns:1fr}}
+
+.fk-step0{max-width:640px;margin:0 auto 30px;background:var(--sk-surface);border:1px dashed var(--sk-line);
+ border-radius:var(--sk-radius-sm);overflow:hidden}
+.fk-step0 summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:16px 20px;
+ font-family:var(--sk-font);user-select:none}
+.fk-step0 summary::-webkit-details-marker{display:none}
+.fk-step0-badge{flex:none;font-size:11px;font-weight:900;letter-spacing:.06em;color:#fff;background:var(--sk-accent);
+ padding:4px 10px;border-radius:999px}
+.fk-step0-title{flex:1;font-weight:800;font-size:14.5px;color:var(--sk-ink)}
+.fk-step0-arrow{flex:none;color:var(--sk-muted);transition:transform .2s ease}
+.fk-step0[open] .fk-step0-arrow{transform:rotate(180deg)}
+.fk-step0-body{padding:0 20px 20px;font-family:var(--sk-font)}
+
+/* デスクトップ既定: 縦積みで3枚とも普通にスクロールして全部見える（スワイプ不要）。
+   狭い画面（スマホ）だけ横スワイプのカルーセルに切り替える。 */
+.fk-pcard-track{display:flex;flex-direction:column;gap:14px;padding:14px 2px 8px}
+.fk-pcard{flex:none;width:100%;max-width:none;background:var(--sk-card);
+ border:1px solid var(--sk-line);border-radius:var(--sk-radius-sm);padding:16px 18px}
+.fk-pcard-tag{display:inline-block;font-size:11px;font-weight:900;letter-spacing:.04em;color:var(--sk-accent2);
+ background:var(--sk-soft);padding:3px 10px;border-radius:999px;margin-bottom:8px}
+.fk-pcard-title{font-family:var(--sk-serif);font-size:16px;font-weight:700;margin-bottom:6px;color:var(--sk-ink)}
+.fk-pcard-text{font-size:13.5px;line-height:1.85;color:var(--sk-ink);margin-bottom:8px}
+.fk-pcard-hint{display:none;text-align:center;font-size:11.5px;font-weight:800;color:var(--sk-accent2);margin:2px 0 4px}
+@media(max-width:700px){
+ .fk-pcard-hint{display:block}
+ .fk-pcard-track{flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+ .fk-pcard-track::-webkit-scrollbar{display:none}
+ .fk-pcard{flex:0 0 86%;max-width:420px;scroll-snap-align:center}
+}
+
+.fk-note{max-width:640px;margin:0 auto;padding:16px 18px;border-left:4px solid var(--sk-warm-b);
+ background:var(--sk-warm);border-radius:0 var(--sk-radius-sm) var(--sk-radius-sm) 0;
+ color:var(--sk-warm-ink);font-size:13.5px;line-height:1.9}
+.fk-note b{color:var(--sk-warm-b)}
+.fk-note-section{padding:40px 16px 8px;font-family:var(--sk-font)}
+.fk-note + .fk-note{margin-top:12px}
+
+.fk-faq{padding:44px 16px 8px;font-family:var(--sk-font)}
+.fk-faq-wrap{max-width:640px;margin:0 auto;display:grid;gap:10px}
+.fk-faq-item{background:var(--sk-card);border:1px solid var(--sk-line);border-radius:var(--sk-radius-sm);
+ padding:16px 18px}
+.fk-faq-q{display:flex;gap:10px;font-weight:900;font-size:14.5px;color:var(--sk-ink);margin-bottom:6px}
+.fk-faq-q span{flex:none;width:22px;height:22px;border-radius:50%;background:var(--sk-accent);color:#fff;
+ font-size:11px;display:flex;align-items:center;justify-content:center}
+.fk-faq-a{font-size:13.5px;line-height:1.85;color:var(--sk-muted);padding-left:32px}
+.fk-faq-item.is-fold{padding:0}
+.fk-faq-item.is-fold>summary{list-style:none;cursor:pointer;padding:15px 16px;margin:0;
+ align-items:center}
+.fk-faq-item.is-fold>summary::-webkit-details-marker{display:none}
+.fk-faq-item.is-fold>summary::after{content:"\25BE";margin-left:auto;flex:none;
+ color:var(--sk-accent);font-size:11px;transition:transform .2s}
+.fk-faq-item.is-fold[open]>summary::after{transform:rotate(180deg)}
+.fk-faq-item.is-fold>.fk-faq-a{padding:0 16px 15px 48px}
+
+.fk-section-eyebrow{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
+ color:var(--sk-accent2);margin-bottom:6px;text-align:center}
+.fk-section-title{font-family:var(--sk-serif);font-size:clamp(19px,3.6vw,24px);font-weight:700;
+ margin-bottom:20px;text-align:center;color:var(--sk-ink)}
+
+.fk-gallery{padding:44px 0 8px;font-family:var(--sk-font)}
+.fk-gallery-lead{max-width:640px;margin:0 auto 18px;padding:0 16px;text-align:center;color:var(--sk-muted);
+ font-size:13.5px;line-height:1.85}
+.fk-gallery-hint{max-width:640px;margin:0 auto 14px;padding:0 16px;text-align:center;color:var(--sk-accent2);
+ font-size:11.5px;font-weight:800;letter-spacing:.04em}
+.fk-gallery-track{max-width:640px;margin:0 auto;display:flex;gap:14px;overflow-x:auto;
+ scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:4px 16px 14px;scrollbar-width:none}
+.fk-gallery-track::-webkit-scrollbar{display:none}
+.fk-gallery-item{flex:0 0 68%;max-width:260px;scroll-snap-align:center;border-radius:var(--sk-radius-sm);
+ overflow:hidden;background:var(--sk-card);border:1px solid var(--sk-line);box-shadow:var(--sk-shadow);
+ cursor:zoom-in}
+.fk-gallery-item img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}
+.fk-gallery-cap{padding:8px 6px;text-align:center;font-size:11px;font-weight:800;color:var(--sk-muted)}
+.fk-gallery-lightbox{position:fixed;inset:0;z-index:99998;background:rgba(20,16,12,.9);
+ display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.fk-gallery-lightbox.is-on{display:flex}
+.fk-gallery-lightbox img{max-width:min(92vw,520px);max-height:80vh;width:100%;border-radius:14px;
+ object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.fk-gallery-lightbox-x{position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:50%;
+ border:0;background:rgba(255,255,255,.16);color:#fff;font-size:18px;cursor:pointer}
+
+/* ===== spec_kit ===== */
+.sp-sec{padding:56px 16px;font-family:var(--sk-font);color:var(--sk-ink);
+ box-sizing:border-box;width:100%}
+.sp-sec *,.sp-sec *:before,.sp-sec *:after{box-sizing:border-box}
+.sp-wrap{width:min(var(--sk-wrap),100%);margin:0 auto}
+.sp-eyebrow{margin:0 0 10px;text-align:center;font-size:11.5px;font-weight:900;
+ letter-spacing:.14em;color:var(--sk-accent2);text-transform:uppercase}
+.sp-title{margin:0 0 14px;text-align:center;font-weight:900;line-height:1.55;
+ font-size:clamp(19px,4.2vw,25px);color:var(--sk-ink)}
+.sp-lead{margin:0 auto 26px;max-width:34em;text-align:center;line-height:2;
+ font-size:clamp(14px,2.5vw,15.5px);color:var(--sk-muted)}
+.sp-lead strong{color:var(--sk-ink);font-weight:900}
+.sp-src{margin:16px 0 0;text-align:center;font-size:11.5px;line-height:1.9;
+ color:var(--sk-muted)}
+.sp-src a{color:var(--sk-accent2);font-weight:700}
+
+/* 数値の対比 */
+.sp-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.sp-stat{background:var(--sk-card);border:1px solid var(--sk-line);
+ border-radius:var(--sk-radius);padding:20px 16px;text-align:center;
+ box-shadow:var(--sk-shadow)}
+.sp-stat-k{margin:0 0 12px;font-size:12.5px;font-weight:900;color:var(--sk-muted)}
+.sp-stat-row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.sp-stat-old{font-size:clamp(15px,3vw,17px);font-weight:800;color:var(--sk-muted);
+ text-decoration:line-through;text-decoration-thickness:2px;opacity:.75}
+.sp-stat-ar{color:var(--sk-accent);font-weight:900;font-size:15px}
+.sp-stat-new{font-size:clamp(23px,5.4vw,30px);font-weight:900;color:var(--sk-accent);
+ line-height:1.2;letter-spacing:-.01em}
+.sp-stat-n{margin:10px 0 0;font-size:12px;line-height:1.85;color:var(--sk-muted)}
+
+/* 規格表 */
+.sp-table{background:var(--sk-card);border:1px solid var(--sk-line);
+ border-radius:var(--sk-radius);box-shadow:var(--sk-shadow);overflow:hidden}
+.sp-table-cap{margin:0;padding:15px 18px;background:var(--sk-surface);
+ border-bottom:1px solid var(--sk-line);font-size:13px;font-weight:900;
+ color:var(--sk-ink);letter-spacing:.01em}
+.sp-row{display:flex;gap:12px;padding:13px 18px;border-bottom:1px solid var(--sk-line);
+ font-size:13.5px;line-height:1.8}
+.sp-row:last-child{border-bottom:0}
+.sp-row dt{flex:0 0 40%;margin:0;font-weight:800;color:var(--sk-muted)}
+.sp-row dd{flex:1;margin:0;font-weight:800;color:var(--sk-ink)}
+.sp-row dd b{color:var(--sk-accent);font-weight:900}
+@media(max-width:400px){
+ .sp-row{flex-direction:column;gap:3px}
+ .sp-row dt{flex:none}
+}
+
+/* 2つのやり方を比べる */
+.sp-cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.sp-cmp{grid-template-columns:1fr}}
+.sp-col{border-radius:var(--sk-radius);padding:22px 18px 20px;border:1px solid var(--sk-line);
+ background:var(--sk-card);display:flex;flex-direction:column}
+.sp-col.is-win{border:2px solid var(--sk-accent);background:var(--sk-soft);
+ box-shadow:var(--sk-shadow)}
+.sp-col-tag{align-self:flex-start;font-size:11px;font-weight:900;letter-spacing:.06em;
+ padding:4px 11px;border-radius:999px;background:var(--sk-surface);color:var(--sk-muted)}
+.sp-col.is-win .sp-col-tag{background:var(--sk-accent);color:#fff}
+.sp-col-h{margin:12px 0 4px;font-size:clamp(15.5px,3.2vw,17.5px);font-weight:900;
+ line-height:1.6;color:var(--sk-ink)}
+.sp-col.is-win .sp-col-h{color:var(--sk-ink)}
+.sp-col-sub{margin:0 0 14px;font-size:12.5px;font-weight:800;color:var(--sk-muted)}
+.sp-col ol{margin:0;padding:0 0 0 1.15em;list-style:decimal}
+.sp-col li{margin:0 0 9px;font-size:13.5px;line-height:1.85;color:var(--sk-ink);opacity:.9}
+.sp-col li:last-child{margin-bottom:0}
+.sp-col li b{font-weight:900;opacity:1}
+.sp-col.is-win li{color:var(--sk-ink);opacity:1}
+.sp-col-foot{margin:16px 0 0;padding-top:14px;border-top:1px dashed var(--sk-line);
+ font-size:12.5px;font-weight:900;line-height:1.8;color:var(--sk-muted)}
+.sp-col.is-win .sp-col-foot{border-top-color:var(--sk-accent);color:var(--sk-accent)}
+
+/* 流れを止めて置く注意 */
+.sp-callout{width:min(560px,100%);margin:0 auto;background:var(--sk-warm);
+ border:1px solid var(--sk-warm-bd);border-radius:var(--sk-radius);
+ padding:22px 20px;color:var(--sk-warm-ink)}
+.sp-callout>b{display:block;margin:0 0 8px;font-size:14.5px;font-weight:900;
+ color:var(--sk-warm-b)}
+.sp-callout p{margin:0;font-size:13.5px;line-height:2;font-weight:700}
+.sp-callout p b{display:inline;color:var(--sk-warm-b);font-weight:900}
+
+/* 画像を並べて見せる（実物の証拠） */
+.sp-shots{display:grid;gap:14px}
+.sp-shot{background:var(--sk-card);border:1px solid var(--sk-line);
+ border-radius:var(--sk-radius);overflow:hidden;box-shadow:var(--sk-shadow)}
+.sp-shot img{display:block;width:100%;height:auto}
+.sp-shot p{margin:0;padding:12px 16px;border-top:1px solid var(--sk-line);
+ background:var(--sk-surface);font-size:12.5px;line-height:1.8;font-weight:800;
+ color:var(--sk-muted)}
+.sp-shot p b{color:var(--sk-ink);font-weight:900}
+/* ルートの入口（#28の「ここから道が2つに分かれる」） */
+.sp-route{padding-bottom:22px}
+.sp-route-badge{display:inline-block;font-size:11.5px;font-weight:900;letter-spacing:.1em;
+ padding:5px 14px;border-radius:999px;background:var(--sk-surface);color:var(--sk-muted)}
+.sp-route.is-main .sp-route-badge{background:var(--sk-accent);color:#fff}
+.sp-route-head{text-align:center}
+.sp-route-title{margin:14px 0 6px;font-weight:900;line-height:1.5;
+ font-size:clamp(21px,4.8vw,28px);color:var(--sk-ink)}
+.sp-route-path{margin:0 0 18px;font-size:13px;font-weight:900;color:var(--sk-accent2);
+ letter-spacing:.02em}
+.sp-route-meta{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}
+.sp-route-meta span{font-size:12px;font-weight:800;color:var(--sk-muted);
+ background:var(--sk-card);border:1px solid var(--sk-line);border-radius:999px;
+ padding:7px 14px}
+.sp-route-meta span b{color:var(--sk-ink);font-weight:900}
+/* ルート切り替えタブ（#28。縦に全部並べると長すぎるので、押した道だけ出す） */
+.sp-tabs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+@media(max-width:560px){.sp-tabs{grid-template-columns:1fr}}
+.sp-tab{appearance:none;-webkit-appearance:none;text-align:left;cursor:pointer;
+ font-family:inherit;background:var(--sk-card);border:2px solid var(--sk-line);
+ border-radius:var(--sk-radius);padding:18px 18px 16px;transition:.18s;
+ display:flex;flex-direction:column;gap:5px;position:relative}
+.sp-tab:hover{border-color:var(--sk-accent2)}
+.sp-tab-k{font-size:11px;font-weight:900;letter-spacing:.08em;color:var(--sk-muted)}
+.sp-tab-h{font-size:clamp(16px,3.4vw,18.5px);font-weight:900;color:var(--sk-ink);line-height:1.5}
+.sp-tab-s{font-size:12.5px;font-weight:800;color:var(--sk-muted);line-height:1.7}
+.sp-tab[aria-selected="true"]{border-color:var(--sk-accent);background:var(--sk-soft);
+ box-shadow:var(--sk-shadow)}
+.sp-tab[aria-selected="true"] .sp-tab-k{color:var(--sk-accent)}
+.sp-tab[aria-selected="true"]::after{content:"";position:absolute;left:50%;bottom:-13px;
+ width:20px;height:20px;margin-left:-10px;background:var(--sk-soft);
+ border-right:2px solid var(--sk-accent);border-bottom:2px solid var(--sk-accent);
+ transform:rotate(45deg);border-radius:0 0 5px 0}
+@media(max-width:560px){.sp-tab[aria-selected="true"]::after{display:none}}
+.sp-panel[hidden]{display:none}
+
+/* フォルダの中身を見せる（文字だけだと絶対に伝わらないところ用） */
+.sp-tree{width:min(420px,100%);margin:0 auto;background:var(--sk-dark1);
+ border-radius:var(--sk-radius);padding:20px 22px;
+ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+ font-size:13px;line-height:2.05;color:#DCD6F0}
+.sp-tree b{color:var(--sk-hl);font-weight:700}
+.sp-tree i{font-style:normal;color:#7E769B}
+.sp-tree-cap{margin:12px auto 0;width:min(420px,100%);font-size:12px;line-height:1.85;
+ font-weight:800;color:var(--sk-muted);text-align:center}
+
+/* スマホだけに出す、追従の公式LINEボタン。
+   最後まで読み切らずに離脱する人にも入口を残しておくためのもの。
+   ただし「常に出しっぱなし」は邪魔なので、
+   ①1画面ぶんスクロールするまで出さない ②本物のCTAが画面に入ったら消える
+   ③×で閉じたらそのセッション中は二度と出ない、の3点で抑えている。
+   PC(701px以上)では出さない（本文の脇に余白があるので邪魔になるだけ）。*/
+.sp-dock{position:fixed;left:50%;bottom:12px;z-index:99998;
+ display:flex;align-items:center;gap:11px;
+ width:min(520px,calc(100% - 20px));padding:13px 16px;
+ border-radius:999px;background:var(--sk-green);color:#fff;
+ font-family:var(--sk-font);text-decoration:none;
+ box-shadow:0 12px 34px rgba(6,199,85,.36);
+ transform:translate(-50%,120%);opacity:0;pointer-events:none;
+ transition:opacity .3s ease,transform .3s cubic-bezier(.2,.7,.3,1)}
+.sp-dock.is-on{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+.sp-dock svg{width:22px;height:22px;flex:none}
+.sp-dock-t{flex:1;min-width:0;font-size:14.5px;font-weight:900;line-height:1.4}
+.sp-dock-t small{display:block;font-size:11px;font-weight:800;opacity:.85;letter-spacing:.02em}
+.sp-dock-a{flex:none;font-size:16px;font-weight:900}
+.sp-dock-x{position:absolute;top:-8px;right:2px;width:26px;height:26px;border-radius:50%;
+ border:0;background:var(--sk-dark1);color:rgba(255,255,255,.85);font-size:14px;line-height:1;
+ cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+@media(min-width:701px){.sp-dock{display:none}}
+@media(prefers-reduced-motion:reduce){.sp-dock{transition:none}}
+/* 追従ボタンが出ている間は、フッターの最後が隠れないように床を上げる */
+body.sp-has-dock{padding-bottom:78px}
+@media(min-width:701px){body.sp-has-dock{padding-bottom:0}}
+/* コピー直後のひとこと(sk-cue)と重ならないように、そちらを上へ逃がす */
+body.sp-has-dock .sk-cue{bottom:80px}
+
+/* スクロールで1枚ずつ入ってくる動き。JSが無ければ何も起きない（=常時表示）。
+   「全部を真面目に読む人ばかりではない」ので、目を留める理由を足す。 */
+.sp-rv{opacity:0;transform:translateY(14px);
+ transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.3,1)}
+.sp-rv.is-in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.sp-rv,.sp-rv.is-in{opacity:1;transform:none;transition:none}}
+
+/* 「必要な人だけ開く」ための折りたたみ（規格表など） */
+.sp-fold{background:var(--sk-card);border:1px solid var(--sk-line);
+ border-radius:var(--sk-radius);overflow:hidden;box-shadow:var(--sk-shadow)}
+.sp-fold>summary{list-style:none;cursor:pointer;padding:17px 20px;font-size:13.5px;
+ font-weight:900;color:var(--sk-ink);display:flex;align-items:center;
+ justify-content:space-between;gap:12px}
+.sp-fold>summary::-webkit-details-marker{display:none}
+.sp-fold>summary::after{content:"\25BE";color:var(--sk-accent);font-size:12px;
+ transition:transform .2s;flex:none}
+.sp-fold[open]>summary::after{transform:rotate(180deg)}
+.sp-fold[open]>summary{border-bottom:1px solid var(--sk-line)}
+.sp-fold-body{padding:16px 14px 4px}
+.sp-fold-body .sp-table{box-shadow:none}
+
+/* 日本語が語の途中で折り返さないようにする。塊ごとに inline-block にして、
+   改行は塊と塊の間だけで起きるようにしている（「こん/な遠回り」対策）。 */
+.sk-nb{display:inline-block}
+/* 教科書は「名前＋1行」まで。2026-08-24に廃止した5章の目次カードは戻さない。 */
+.sk-book{width:min(560px,100%);margin:0 auto 22px;padding:18px 20px;text-align:center;
+ background:var(--sk-card);border:1px solid var(--sk-line);border-radius:var(--sk-radius)}
+.sk-book-k{display:inline-block;margin-bottom:8px;padding:3px 11px;border-radius:999px;
+ background:var(--sk-hl);color:#fff;font-size:11.5px;font-weight:900;letter-spacing:.04em}
+.sk-book img{display:block;width:min(210px,58%);margin:0 auto 12px;height:auto}
+.sk-book>b{display:block;font-size:17px;line-height:1.5}
+.sk-book p b{display:inline;font-size:inherit;line-height:inherit}
+.sk-book p{margin:8px 0 0;font-size:13.5px;line-height:1.8;opacity:.85}
+.sk-offer{width:min(560px,100%);margin:18px auto 0;padding:16px 18px;text-align:center;
+ border:1px dashed var(--sk-line);border-radius:var(--sk-radius);font-size:14px;line-height:1.8}
+
+/* プロンプト見出しが狭い画面で「…」に切れるので、折り返しを許可する。
+   共通キット(fresh_kit)はデプロイ済みページが使っているので触らず、ページ側で上書きする。 */
+.fk-prompt-h>span:first-child{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.55}
+/* 処世術の5枚。冒頭の疑問3連(.sk-doubt)と同じ見た目に揃えて、新しい部品に見せない。
+   見えているのは「見出し＋1行」まで。続きはタップで開く（FAQと同じ挙動）。 */
+.n29-hint{margin:0 auto 12px;text-align:center;font-size:12px;font-weight:800;
+ letter-spacing:.02em;color:var(--sk-accent2)}
+.n29-rules{width:min(560px,100%);margin:0 auto;display:grid;gap:10px}
+.n29-rule{background:var(--sk-card);border:1px solid var(--sk-line);
+ border-radius:var(--sk-radius-sm);box-shadow:var(--sk-shadow);overflow:hidden}
+.n29-rule>summary{list-style:none;cursor:pointer;display:flex;gap:13px;align-items:flex-start;
+ padding:15px 18px}
+.n29-rule>summary::-webkit-details-marker{display:none}
+.n29-rule i{flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+ background:var(--sk-soft);color:var(--sk-accent);font-style:normal;font-weight:900;font-size:12px}
+.n29-rule-t{flex:1;min-width:0}
+.n29-rule b{display:block;font-size:14.5px;line-height:1.7;color:var(--sk-ink)}
+.n29-rule p{margin:3px 0 0;font-size:13.5px;line-height:1.85;color:var(--sk-muted)}
+.n29-rule-x{flex:none;align-self:center;color:var(--sk-accent);font-size:11px;
+ transition:transform .2s}
+.n29-rule[open] .n29-rule-x{transform:rotate(180deg)}
+.n29-rule-body{margin:0 18px 16px 57px;padding-top:13px;border-top:1px dashed var(--sk-line);
+ font-size:13.5px;line-height:1.95;color:var(--sk-ink)}
+.n29-rule-body b{display:inline;font-size:inherit;color:var(--sk-accent)}
+@media(max-width:440px){.n29-rule-body{margin-left:18px}}
+
+/* ── 日本語の改行対策（2026-08-31）──
+   見出しは行の長さを揃え、本文は語の途中で割れにくくする。
+   text-wrap / auto-phrase は未対応ブラウザでは単に無視されるので、入れて損はない。
+   これで直らない箇所（Safari等）は、ページ側で sk-nb を明示して割れ方を固定している。 */
+.fk-hero h1,.sk-h,.sp-title,.fk-section-title,.fk-step-title,.sp-col-h,.sp-route-title{
+ text-wrap:balance}
+.sp-lead,.sk-doubt-lead,.sk-answer,.fk-step-text,.sp-callout p,.n29-rule p,.n29-rule-body,
+.fk-note,.fk-step-img-cap,.sp-col-foot,.sk-gap-lead,.sk-bridge,.sp-src,.sk-book p,
+.fk-faq-a,.sp-stat-n{text-wrap:pretty}
+.fk-hero h1,.sk-h,.sp-title,.fk-section-title,.fk-step-title,.sp-lead,.sk-doubt-lead,
+.sk-answer,.fk-step-text,.sp-callout b,.sp-callout p,.n29-rule b,.n29-rule p,.n29-rule-body,
+.fk-note,.fk-step-img-cap,.sp-col-h,.sp-col-foot,.sp-col li,.fk-faq-q,.fk-faq-a,
+.sk-gap-lead,.sk-gap-list li,.sk-bridge,.sk-book p{word-break:auto-phrase}
+</style>
+</head>
+<body>
+
+<header class="fk-hero">
+ <div class="fk-hero-bg"><img src="assets/hero.jpg" alt="ChatCutの編集画面。縦型の動画にテロップが入り、タイムラインにカット済みのクリップが並んでいる"></div>
+ 
+ <h1><span class="sk-nb">ChatCut</span> <em><span class="sk-nb">話すだけ編集キット</span></em></h1>
+ <p class="fk-hero-sub">撮っただけの動画が、<br class="sk-br"><span class="sk-nb">投稿できる1本になって</span><span class="sk-nb">返ってくる。</span></p>
+ 
+</header>
+
+<section class="sk-sec">
+ <div class="sk-wrap">
+  <div class="sk-head"><h2 class="sk-h">編集ソフトは、<br class="sk-br">一度も開きません。</h2></div>
+  <p class="sk-doubt-lead">気になってはいても、ここで手が止まりませんか。</p>
+  <div class="sk-doubts">
+  <div class="sk-doubt"><span class="sk-no">01</span><p>動画編集は、ソフトの使い方を覚えるところで終わりそう</p></div>
+  <div class="sk-doubt"><span class="sk-no">02</span><p>カットもテロップも、結局は自分で1つずつやることになりそう</p></div>
+  <div class="sk-doubt"><span class="sk-no">03</span><p>任せるにしても、何をどう頼めばいいのか分からない</p></div>
+  </div>
+  <div class="sk-answer"><strong>ソフトは開きません。</strong>カットもテロップも、頼む相手はAIです。<br>頼み方も考えなくて大丈夫。<strong class="sk-nb">そのまま貼れる指示文</strong>を、このページに置いています。</div>
+ </div>
+</section>
+<main>
+
+<section class="fk-flow">
+ <p class="fk-section-eyebrow">全体の流れ</p>
+ <h2 class="fk-section-title">使うのは、この2つだけ</h2>
+ <div class="fk-flow-diagram">
+  <div class="fk-flow-node">
+    <div class="fk-flow-icon"><span style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:#fff;flex:none;box-shadow:0 1px 4px rgba(0,0,0,.12)"><span style="width:22px;height:22px;color:#10A37F;display:block"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"/></svg></span></span></div>
+    <div class="fk-flow-tool">ChatGPT（Codex）</div>
+    <div class="fk-flow-name">話すように編集を頼む</div>
+   </div>
+   <span class="fk-flow-arrow">&rarr;</span>
+   <div class="fk-flow-node">
+    <div class="fk-flow-icon"><span class="fk-flow-icon-num">2</span></div>
+    <div class="fk-flow-tool">ChatCut</div>
+    <div class="fk-flow-name">カット・テロップ・AI映像を実行</div>
+   </div>
+ </div>
+</section>
+
+<section class="sp-sec">
+ <div class="sp-wrap">
+  
+  <div class="sp-callout"><b>ChatCutは、動画編集の<span class="sk-nb">&ldquo;手を動かす担当&rdquo;です。</span></b><p>ふだんのChatGPTは、画面の中で<span class="sk-nb">答えるところまで。</span><strong>ChatCutは、実際に<span class="sk-nb">タイムラインを切って、</span><span class="sk-nb">テロップを載せて、</span><span class="sk-nb">書き出します。</span></strong><br>操作するのは<b>パソコン版のChatGPTアプリ</b>（Codexに切り替えて使います）。ChatGPTの<b class="sk-nb">有料プラン</b>と、<span class="sk-nb">MacまたはWindowsの</span><span class="sk-nb">パソコンが要ります。</span></p></div>
+  
+ </div>
+</section>
+
+<section class="fk-steps">
+ <div class="fk-steps-wrap">
+  <div class="fk-step">
+    <div class="fk-step-num">1</div>
+    <div class="fk-step-body">
+     <div class="fk-step-label">STEP 1 ／ ChatCut</div>
+     <div class="fk-step-title"><span class="sk-nb">ChatCutに登録して、</span><span class="sk-nb">動画を入れておく</span></div>
+     <p class="fk-step-text">「ChatCut」で検索して、公式サイトから無料アカウントを作ります。編集したい動画をアップロードしておくだけで、STEP 1は終わりです。<strong>まずは3分以内の、自分で撮った動画</strong>を使ってください。</p>
+     <div class="fk-checklist"><span>無料から試せる</span><span>カード登録は不要</span><span>ブラウザで動く</span></div>
+     <div class="fk-step-img"><img src="assets/step1-import.jpg" alt="ChatCutの編集画面。左のMY ASSETSに、アップロードした動画が1本並んでいる" loading="lazy"></div><p class="fk-step-img-cap">アップした動画は、<span class="sk-nb">左の「MY ASSETS」に並びます</span></p>
+     
+     <div style="margin-top:14px;text-align:center"><a href="https://chatcut.io/" target="_blank" rel="noopener" style="display:inline-block;padding:11px 22px;border-radius:999px;background:var(--sk-accent2);color:#fff;font-weight:800;font-size:13.5px;text-decoration:none">ChatCutを開く &rarr;</a></div>
+    </div>
+   </div>
+   <div class="fk-step">
+    <div class="fk-step-num">2</div>
+    <div class="fk-step-body">
+     <div class="fk-step-label"><span class="fk-step-icon"><span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#fff;flex:none;box-shadow:0 1px 4px rgba(0,0,0,.12)"><span style="width:13px;height:13px;color:#10A37F;display:block"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"/></svg></span></span></span>STEP 2 ／ ChatGPT</div>
+     <div class="fk-step-title"><span class="sk-nb">パソコン版ChatGPTを開いて、</span><span class="sk-nb">Codexに切り替える</span></div>
+     <p class="fk-step-text">ここがいちばん間違えやすい場所です。<strong>ブラウザ版・スマホ版ではなく、パソコンにインストールしたアプリ</strong>を開きます。左上のメニューを <strong>ChatGPT から Codex に切り替えて</strong>、下の指示文を送るだけです。</p>
+     <div class="fk-checklist"><span>ブラウザ版・スマホ単体では不可</span><span>Mac / Windows どちらもOK</span><span>ChatGPTの有料プランが必要</span></div>
+     <div class="fk-step-img"><img src="assets/step2-codex.jpg" alt="ChatGPTデスクトップアプリの左上メニュー。ChatGPTとCodexが並び、Codexが選ばれている" loading="lazy"></div><p class="fk-step-img-cap">左上のメニューから「Codex」を選ぶ</p>
+     <details class="fk-prompt">
+      <summary class="fk-prompt-h"><span>導入用の指示文｜最初の1回だけ</span><span class="fk-prompt-h-right"><button class="fk-prompt-copy" type="button">コピー</button><span class="fk-prompt-arrow">&#9662;</span></span></summary>
+      <pre>chatcut.io/chatgpt を読んで、
+ChatCutのプラグインをインストールしてください。
+
+そのあと、ログインの認証まで進めて、
+編集用の新しいタスクを開いてください。
+
+私の操作が必要な場面が来たら、
+何をすればいいか日本語で教えてください。</pre>
+     </details>
+     <div class="sp-callout" style="margin-top:16px"><b>うまくいったかの見分け方。</b><p>認証の画面がひらいてログインを求められ、そのあと<b><span class="sk-nb">編集用の新しいタスクが</span><span class="sk-nb">開けば成功です。</span></b><br>途中で止まったら、出ているエラー文をそのまま貼って<span class="sk-nb">「続きをやって」と伝えれば、</span><span class="sk-nb">やり直してくれます。</span></p></div>
+    </div>
+   </div>
+   <div class="fk-step">
+    <div class="fk-step-num">3</div>
+    <div class="fk-step-body">
+     <div class="fk-step-label">STEP 3 ／ ChatCut</div>
+     <div class="fk-step-title"><span class="sk-nb">動画を渡して、</span><span class="sk-nb">編集指示を送る</span></div>
+     <p class="fk-step-text">あとは、話すように伝えるだけです。下の指示文は、<strong>カット・テロップ・AI映像・効果音・BGMまでを1回で頼む</strong>ためのもの。そのまま貼れば、順番に手を動かして最後まで進めてくれます。</p>
+     <div class="fk-checklist"><span>日本語でOK</span><span>1回でまとめて頼める</span><span>気に入らなければ言い直せる</span></div>
+     <div class="fk-step-img-grid"><div><div class="fk-step-img"><img src="assets/step3-instruction.jpg" alt="編集画面のAIチャット欄に、日本語の編集指示を送ったところ。AIが素材を確認して手順を分解している" loading="lazy"></div><p class="fk-step-img-cap">① 編集用の画面に、指示文をそのまま送る</p></div><div><div class="fk-step-img"><img src="assets/result-export.jpg" alt="ChatCutのAIパネル。実行した作業の一覧と、1080pでの書き出しを開始したという報告が出ている" loading="lazy"></div><p class="fk-step-img-cap">② 書き出しまで進む。<span class="sk-nb">やった作業も報告される</span></p></div></div>
+     <details class="fk-prompt">
+      <summary class="fk-prompt-h"><span>編集指示｜リール1本ぶんをまとめて頼む</span><span class="fk-prompt-h-right"><button class="fk-prompt-copy" type="button">コピー</button><span class="fk-prompt-arrow">&#9662;</span></span></summary>
+      <pre>ChatCutを使って、現在のプロジェクトに読み込まれている動画をInstagramリール向けに編集してください。
+
+【目的】
+テンポが良く、最後まで見てもらいやすい縦型ショート動画に仕上げる。
+
+【編集内容】
+
+1. カット編集
+   ・話していない無音部分を削除
+   ・言い直し、噛み、不要な間を削除
+   ・0.5秒以上の不自然な間はできるだけ詰める
+   ・会話の意味が変わらないようにする
+   ・テンポ重視だが、不自然な細切れにはしない
+
+2. テロップ
+   ・音声を日本語で文字起こし
+   ・動画全体に字幕を入れる
+   ・1画面あたり最大2行
+   ・長い文章は読みやすい位置で分割
+   ・重要な単語だけ強調する
+   ・誤字脱字がないか確認する
+
+3. AI動画・Bロール
+   ・話している内容を分析し、映像を補足した方が理解しやすい部分を3〜5か所選ぶ
+   ・その部分に合う短いAI動画またはモーショングラフィックスを生成する
+   ・元の話している映像が完全に見えなくならないよう、必要な部分だけ使用する
+   ・生成映像の内容はナレーションと一致させる
+
+4. 効果音
+   ・重要なテロップ表示
+   ・画面切り替え
+   ・AI動画への切り替え
+
+など、効果的なポイントだけに効果音を追加する。
+
+効果音を入れすぎないこと。
+
+5. BGM
+   ・動画の雰囲気に合うBGMを生成または選択する
+   ・話している声を邪魔しない音量にする
+   ・動画全体に自然につなげる
+
+6. 最終調整
+   ・縦型9:16
+   ・SNSショート動画向け
+   ・冒頭3秒は特にテンポを速くする
+   ・音声、字幕、映像のタイミングを確認する
+   ・すべての編集がChatCutのタイムラインに正しく反映されていることを確認する
+
+編集が完了したら、変更内容を確認してから書き出せる状態まで仕上げてください。
+
+AI動画・音楽などで生成クレジットや追加承認が必要な場合のみ、その直前で確認してください。</pre>
+     </details>
+     <details class="fk-prompt">
+      <summary class="fk-prompt-h"><span>修正依頼｜出てきたものを直す</span><span class="fk-prompt-h-right"><button class="fk-prompt-copy" type="button">コピー</button><span class="fk-prompt-arrow">&#9662;</span></span></summary>
+      <pre>いまの編集を、次のとおり直してください。
+
+・冒頭のあいさつを丸ごと削る
+・22秒あたりの間が長いので詰める
+・テロップの文字をひとまわり大きくする
+・BGMを、もう少し静かな曲に変える
+
+直した箇所だけ、あとで一覧にしてください。</pre>
+     </details>
+     <div class="fk-step-img" style="margin-top:16px"><img src="assets/result-frames.jpg" loading="lazy" alt="できあがった縦型動画のフレーム2枚。左は日本語テロップの入った本人の映像、右は話に合わせて生成されたAI映像"></div><p class="fk-step-img-cap">返ってきた動画。<span class="sk-nb">左がテロップ、</span><span class="sk-nb">右がAIが作って差し込んだ映像です</span></p><div class="sp-callout" style="margin-top:16px"><b>通る指示は、<span class="sk-nb">書く順番が決まっています。</span></b><p><b><span class="sk-nb">目的 → やること → 条件 →</span><span class="sk-nb">禁止 → 確認</span></b>。<span class="sk-nb">上の指示文も、</span><span class="sk-nb">この順で書いてあります。</span><br>この形は動画編集にかぎりません。<span class="sk-nb">資料づくりでも文章でも、</span><span class="sk-nb">そのまま使えます。</span></p></div>
+    </div>
+   </div>
+ </div>
+</section>
+
+<section class="sp-sec" style="background:var(--sk-surface)">
+ <div class="sp-wrap">
+  <p class="sp-eyebrow">任せる／任せない</p><h2 class="sp-title">全部おまかせ、ではありません</h2><p class="sp-lead">任せるほど速くなる作業と、<strong class="sk-nb">自分が見ないと事故る場所</strong>。<span class="sk-nb">この2つは、</span><span class="sk-nb">はっきり分かれます。</span></p>
+  <div class="sp-cmp">
+   <div class="sp-col">
+    <span class="sp-col-tag">任せていい</span>
+    <h3 class="sp-col-h">AIが手を動かす</h3>
+    
+    <ol>
+     <li>言いよどみ・無音を削る</li>
+     <li>日本語のテロップを入れる</li>
+     <li>話に合うAI映像を作って差し込む</li>
+     <li>効果音とBGMをつける</li>
+     <li>縦型9:16で書き出す</li>
+    </ol>
+    <p class="sp-col-foot">ここは、指示を出したら待つだけ。</p>
+   </div>
+   <div class="sp-col is-win">
+    <span class="sp-col-tag">自分がやる</span>
+    <h3 class="sp-col-h">人が確認する</h3>
+    
+    <ol>
+     <li>人名・社名・数字の誤変換</li>
+     <li>カットで話の意味が変わっていないか</li>
+     <li>どの場面を残すかの判断</li>
+     <li>そのまま公開していい内容か</li>
+    </ol>
+    <p class="sp-col-foot">公開の前に一度、通しで見る。<span class="sk-nb">ここだけは省けません。</span></p>
+   </div>
+  </div>
+  
+ </div>
+</section>
+
+<section class="sp-sec">
+ <div class="sp-wrap">
+  <p class="sp-eyebrow">動画で話した処世術</p>
+  <h2 class="sp-title">作業する人から、<br class="sk-br">頼む人へ。</h2>
+  <p class="sp-lead">AIに移っていくのは<strong>手を動かす作業</strong>のほう。
+   残るのは<strong class="sk-nb">何を残すか決める側</strong>です。<br>
+   ChatCutで覚えた頼み方は、<span class="sk-nb">そのまま他の仕事にも効きます。</span></p>
+  <p class="n29-hint">タップすると、それぞれの中身がひらきます</p>
+  <div class="n29-rules">
+   <details class="n29-rule"><summary><i>1</i><span class="n29-rule-t"><b>ツールより先に、目的を決める</b><p>「何ができますか」ではなく<span class="sk-nb">「3分の素材から、60秒のリールを1本」。</span></p></span><span class="n29-rule-x">&#9662;</span></summary><div class="n29-rule-body">「ChatCutで何ができますか」と聞くと、機能の一覧が返ってくるだけです。<br>誰に・何を・どんな状態で届けるかまで決めると、AIは同じ素材でも別の仕上げ方をします。<br><b>ここだけは、AIに渡せません。</b></div></details><details class="n29-rule"><summary><i>2</i><span class="n29-rule-t"><b>まるごと渡さず、分けて渡す</b><p>削る → 構成 → テロップ → 音 → 書き出し。<span class="sk-nb">分けるほど、途中で直せます。</span></p></span><span class="n29-rule-x">&#9662;</span></summary><div class="n29-rule-body">「いい感じにして」で頼むと、直したい場所が出たときに全部やり直しになります。<br>工程で切って渡せば、気に入らない工程だけ戻せます。<br>この渡し方は動画だけの話ではありません。資料もリサーチも、同じ形で頼めます。</div></details><details class="n29-rule"><summary><i>3</i><span class="n29-rule-t"><b>完成の条件を、数字で言う</b><p>60秒以内。1行20文字。冒頭2秒で結論。<span class="sk-nb">決めるのは、いつも人の側です。</span></p></span><span class="n29-rule-x">&#9662;</span></summary><div class="n29-rule-body">「短く」「読みやすく」は、人によって基準が違います。数字にすると、AIも自分も判定できます。<br>迷ったら、禁止をひとつ足すのが早いです（例：意味が変わるカットはしない）。<br><b>上手に頼める人は、自分の合格ラインを説明できる人です。</b></div></details><details class="n29-rule"><summary><i>4</i><span class="n29-rule-t"><b>出てきたものは、下書きだと思う</b><p>ひとつ前の表のとおり、<span class="sk-nb">人名・数字・意味の変化は自分で見ます。</span></p></span><span class="n29-rule-x">&#9662;</span></summary><div class="n29-rule-body">速さより、間違えないことが先です。人名や金額の誤変換は、時間ではなく信用のほうを削ります。<br>直すのは簡単で、気づかないまま出すのがいちばん怖い。<br><b>作業は任せる。判断と責任は手放さない。</b></div></details><details class="n29-rule"><summary><i>5</i><span class="n29-rule-t"><b>うまくいった指示は、保存する</b><p>リール用・切り抜き用・修正用。<span class="sk-nb">次からは呼び出すだけです。</span></p></span><span class="n29-rule-x">&#9662;</span></summary><div class="n29-rule-body">うまくいった指示文に名前をつけて、メモに残しておきます。<br>2回目からは、貼って数か所だけ書き換えれば終わりです。<br><b>1回の成功を偶然で終わらせない</b>——これがいちばん効きます。</div></details>
+  </div>
+  <p class="sp-src">Microsoftの2026年の調査では、AI利用者の<b>86%</b>が「AIの出力は完成品ではなく出発点」と答えています
+   （<a href="https://www.microsoft.com/en-us/worklab/work-trend-index/agents-human-agency-and-the-opportunity-for-every-organization" target="_blank" rel="noopener">Work Trend Index 2026</a>）。</p>
+ </div>
+</section>
+
+<section class="sp-sec">
+ <div class="sp-wrap">
+  <p class="sp-eyebrow">お金の話</p><h2 class="sp-title">無料のまま、<br class="sk-br">1本は作れます</h2><p class="sp-lead">ChatCutはクレジット制です。<strong><span class="sk-nb">切る・字幕をつけるだけなら、</span><span class="sk-nb">ほとんど減りません。</span></strong>一気に減るのは、<span class="sk-nb">AI映像やナレーションを</span><span class="sk-nb">生成したときです。</span></p>
+  <div class="sp-stats">
+   <div class="sp-stat">
+    <p class="sp-stat-k">はじめかた</p>
+    <div class="sp-stat-row"><span class="sp-stat-new">無料</span></div>
+    <p class="sp-stat-n">カード登録なしで試せる</p>
+   </div>
+   <div class="sp-stat">
+    <p class="sp-stat-k">有料プラン</p>
+    <div class="sp-stat-row"><span class="sp-stat-new">月25ドル〜</span></div>
+    <p class="sp-stat-n">使う量に合わせて選ぶ形</p>
+   </div>
+   <div class="sp-stat">
+    <p class="sp-stat-k">書き出し</p>
+    <div class="sp-stat-row"><span class="sp-stat-new">1080p</span></div>
+    <p class="sp-stat-n">縦型ショートには十分な画質</p>
+   </div>
+  </div>
+  <p class="sp-src">金額・提供条件は2026年8月時点の目安です。変更されることがあるので、契約の前に<a href="https://chatcut.io/" target="_blank" rel="noopener">ChatCut公式サイト</a>で最新の内容を確認してください。</p>
+ </div>
+</section>
+
+<section class="fk-note-section">
+  <div class="fk-note"><b>認証は、ChatCutの正式な画面で。</b><br>パスワードや認証コードを、チャット欄に貼らないでください。ログインを求められたら、開いた公式の画面で行います。</div>
+  <div class="fk-note"><b>人の動画を預かるときは、先に許可を。</b><br>クラウドに動画をアップロードする仕組みです。クライアントの素材を扱うなら、保存の扱いと利用範囲を規約と契約で確認してから使ってください。</div>
+  <div class="fk-note"><b>本番の前に、自分の動画で1本。</b><br>機能も料金も変わります。納期のある案件でいきなり使わず、失敗しても困らない素材で一度通しておくと安全です。</div>
+</section>
+
+<section class="fk-faq">
+ <p class="fk-section-eyebrow">よくある質問</p>
+ <h2 class="fk-section-title">気になるところ</h2>
+ <div class="fk-faq-wrap">
+  <details class="fk-faq-item is-fold"><summary class="fk-faq-q"><span>Q</span>スマホだけでもできますか</summary><div class="fk-faq-a">導入はパソコン版のChatGPTアプリからです。ブラウザ版やスマホ単体では、この手順は進められません。</div></details>
+  <details class="fk-faq-item is-fold"><summary class="fk-faq-q"><span>Q</span>ChatGPTは無料プランでも使えますか</summary><div class="fk-faq-a">Codexは有料プラン向けの機能なので、ChatGPT側は有料プランが必要です。ChatCut側は無料から試せます。</div></details>
+  <details class="fk-faq-item is-fold"><summary class="fk-faq-q"><span>Q</span>日本語の文字起こしは正確ですか</summary><div class="fk-faq-a">誤変換は起きます。とくに人名・社名・金額は、出てきたテロップを目で追って確認してください。</div></details>
+  <details class="fk-faq-item is-fold"><summary class="fk-faq-q"><span>Q</span>どのくらいの長さの動画がいいですか</summary><div class="fk-faq-a">最初は3分以内の、自分で撮った動画から。失敗しても困らない素材で1本通すのがいちばん早いです。</div></details>
+  <details class="fk-faq-item is-fold"><summary class="fk-faq-q"><span>Q</span>仕上がりが気に入りません</summary><div class="fk-faq-a">直したい場所を文章で伝えれば直ります。STEP 3の「修正依頼」の指示文が、そのまま使えます。</div></details>
+  <details class="fk-faq-item is-fold"><summary class="fk-faq-q"><span>Q</span>クレジットはどこで減りますか</summary><div class="fk-faq-a">AI映像・ナレーション・BGMの生成でよく減ります。切る・テロップだけの使い方なら、無料枠でも一周できます。</div></details>
+ </div>
+</section>
+</main>
+
+<section class="sk-gap">
+ <div class="sk-wrap">
+  <div class="sk-head"><h2 class="sk-h"><span class="sk-nb"><span class="sk-nb">ChatCutの手順と、</span><span class="sk-nb">AI時代の立ち回り</span>は、</span><br><span class="sk-nb">ここまでで</span><span class="sk-nb">全部渡しました。</span><br><span class="sk-nb">ただ、</span><span class="sk-nb">厳しいことを言います。</span></h2></div>
+  <p class="sk-gap-lead">
+   動画が1本できることと、<br>AIを使って<strong>安定して収入につなげる</strong>ことは、<br>
+   まったく別の話です。<br><br>
+   終わったあとに、こういうことで迷います。
+  </p>
+  <ul class="sk-gap-list">
+   <li>そもそも、どんな動画なら最後まで見てもらえるのか</li>
+   <li>編集が速くなったぶんの時間を、どこに使えば収入につながるのか</li>
+   <li>1本で終わらせず、出し続けるにはどうするか</li>
+  </ul>
+  <p class="sk-gap-close">ここで止まる人が、ほとんどです。</p>
+
+  <div class="sk-story">
+   <span class="sk-story-tag">偉そうに書いていますが、僕は失敗の方がずっと多いです。</span>
+   <p>投資、仮想通貨、物販。全部、自分で調べて、自分でやりました。</p>
+   <p>仮想通貨では、よく分かっていないところに<b>20万円</b>を送りました。僕の一ヶ月分の収入です。</p>
+   <p>調べたつもりで、<b>分かった気になっていただけ</b>。結果には、結びついていませんでした。</p>
+   <p>そこから必死に試行錯誤して、ようやく見つけたのが<b>再現しやすい形</b>だったんです。</p></div>
+ </div>
+</section>
+
+
+<section class="sk-cta" id="sk-cta">
+ <div class="sk-wrap">
+  <div class="sk-head"><h2 class="sk-h"><span class="sk-nb">でも、</span><span class="sk-nb">ここまで読んでくれた</span><span class="sk-nb">あなたは、</span><br><span class="sk-nb">こんな遠回り</span><span class="sk-nb">しなくていい。</span></h2></div>
+  <p class="sk-bridge"><strong>僕なりの正解を、ここに全部まとめました。</strong><br>
+   こちらのLINEから、お渡ししています。</p>
+
+  <div class="sk-book">
+   <img src="data:image/jpeg;base64,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" alt="『AIマネタイズの教科書』の表紙" loading="lazy">
+   <span class="sk-book-k">LINE登録者限定</span>
+   <b>『AIマネタイズの教科書』</b>
+   <p>何から始めるか、どのツールを使うか、SNSでどう収益にするか。<br>
+    このページの手順にかぎらない<b>AIマネタイズの全体像</b>を、1冊にまとめたものです。</p>
+  </div>
+
+  <a class="sk-line-btn" href="https://utage-system.com/line/open/nj3MC6diybeh?mtid=e7lKz8UUmrSO" target="_blank" rel="noopener">
+   <span class="sk-tap">＼ タップして ／</span>
+   <span class="sk-btn-main"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h3v4.2l4.8-4.2H20a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/></svg>公式LINEで無料で受け取る</span>
+  </a>
+
+  <div class="sk-offer">期間限定で、<b>個別のサポート会</b>も案内しています。<br>もっと具体的に、直接相談したい人にはおすすめです。</div>
+  <p class="sk-after-btn">受け取りは無料です。合わなければ、いつでも解除できます。</p>
+  <p class="sk-note">タップすると、公式LINEの友だち追加ページへ移動します。</p>
+ </div>
+</section>
+
+
+<footer class="sk-footer">
+ <p class="sk-tagline">ChatGPTから動画編集を自動化する ChatCut導入ガイド — カット・テロップ・AI映像まで</p>
+ <a class="sk-footer-ig" href="https://www.instagram.com/smitch_ai_works/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>Instagram：@smitch_ai_works</a>
+ <p>すみっち ｜ 30歳・現役エンジニア／AI×副業を発信中</p>
+ <p class="sk-copy">&copy; 2026 @smitch_ai_works. All Rights Reserved.</p>
+</footer>
+
+<script>
+document.querySelectorAll('.fk-prompt-copy').forEach(function(btn){
+  btn.addEventListener('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    var pre = btn.closest('.fk-prompt').querySelector('pre');
+    navigator.clipboard.writeText(pre.textContent).then(function(){
+      var t = btn.textContent; btn.textContent = '✓ コピー済み';
+      setTimeout(function(){ btn.textContent = t; }, 1500);
+    });
+  });
+});
+</script>
+
+<script>
+/* コピー直後のひとこと。読者が「目的を達成した瞬間」だけに出す。
+   コピーボタンが無いページでは、6.5割まで読み進めた時点で1度だけ出す。 */
+(function(){
+  var cta = document.getElementById('sk-cta');
+  if (!cta) return;
+  var shown = 0, el = null, timer = null;
+
+  function build(){
+    el = document.createElement('a');
+    el.className = 'sk-cue';
+    el.href = '#sk-cta';
+    el.innerHTML = '<span>コピーできました。<b>ほかの型もまとめて置いてあります</b></span>'
+                 + '<span class="sk-cue-arrow">&darr;</span>';
+    var x = document.createElement('button');
+    x.className = 'sk-cue-x'; x.type = 'button';
+    x.setAttribute('aria-label', '閉じる');
+    x.textContent = '\u00d7';
+    x.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); hide(); shown = 9; });
+    el.appendChild(x);
+    el.addEventListener('click', function(){ hide(); });
+    document.body.appendChild(el);
+  }
+
+  function ctaVisible(){
+    var r = cta.getBoundingClientRect();
+    return r.top < innerHeight && r.bottom > 0;
+  }
+  function hide(){ if (el) el.classList.remove('is-on'); clearTimeout(timer); }
+  function show(){
+    if (shown >= 2 || ctaVisible()) return;
+    if (!el) build();
+    shown++;
+    /* rAF はバックグラウンドタブで止まるため使わない */
+    setTimeout(function(){ el.classList.add('is-on'); }, 20);
+    clearTimeout(timer);
+    timer = setTimeout(hide, 8000);
+  }
+
+  var buttons = [].slice.call(document.querySelectorAll('button'))
+                  .filter(function(b){ return /コピー/.test(b.textContent || ''); });
+
+  if (buttons.length) {
+    document.addEventListener('click', function(e){
+      var b = e.target && e.target.closest ? e.target.closest('button') : null;
+      if (b && /コピー/.test(b.textContent || '') && !b.classList.contains('sk-cue-x')) {
+        setTimeout(show, 550);
+      }
+    }, true);
+  } else {
+    var fired = false;
+    addEventListener('scroll', function(){
+      if (fired) return;
+      var h = document.documentElement.scrollHeight - innerHeight;
+      if (h > 0 && scrollY / h > 0.65) { fired = true; show(); }
+    }, { passive: true });
+  }
+  addEventListener('scroll', function(){ if (el && el.classList.contains('is-on') && ctaVisible()) hide(); },
+                   { passive: true });
+})();
+</script>
+<script>
+(function(){
+ if(!('IntersectionObserver' in window)) return;
+ var t=[].slice.call(document.querySelectorAll(
+  '.fk-step,.sp-stat,.sp-table,.sp-fold,.fk-flow-node,.sp-tab,.fk-note,.sp-tree,.fk-faq-item,.sp-callout'));
+ t.forEach(function(el){ el.classList.add('sp-rv'); });
+ var io=new IntersectionObserver(function(es){
+  es.forEach(function(e){
+   if(e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); }
+  });
+ },{rootMargin:'0px 0px -6% 0px',threshold:0.04});
+ t.forEach(function(el){ io.observe(el); });
+ /* 監視が働かない環境で消えたままにならないように */
+ setTimeout(function(){ t.forEach(function(el){ el.classList.add('is-in'); }); }, 3000);
+})();
+</script>
+<a class="sp-dock" id="sp-dock" href="https://utage-system.com/line/open/nj3MC6diybeh?mtid=e7lKz8UUmrSO" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h3v4.2l4.8-4.2H20a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/></svg><span class="sp-dock-t">公式LINEで無料で受け取る<small>このページの手順の、その先の話</small></span><span class="sp-dock-a">&rarr;</span></a>
+<script>
+(function(){
+ var d = document.getElementById('sp-dock');
+ var cta = document.getElementById('sk-cta');
+ if (!d) return;
+ var closed = false;
+ var x = document.createElement('button');
+ x.className = 'sp-dock-x'; x.type = 'button';
+ x.setAttribute('aria-label','閉じる');
+ x.textContent = '\u00d7';
+ x.addEventListener('click', function(e){
+  e.preventDefault(); e.stopPropagation();
+  closed = true; d.classList.remove('is-on');
+  document.body.classList.remove('sp-has-dock');
+ });
+ d.appendChild(x);
+
+ function ctaVisible(){
+  if (!cta) return false;
+  var r = cta.getBoundingClientRect();
+  return r.top < innerHeight && r.bottom > 0;
+ }
+ function update(){
+  /* 1画面ぶん読んでから出す。本物のCTAが見えている間は引っ込める */
+  var on = !closed && scrollY > innerHeight * 0.9 && !ctaVisible();
+  d.classList.toggle('is-on', on);
+  document.body.classList.toggle('sp-has-dock', on);
+ }
+ addEventListener('scroll', update, { passive: true });
+ addEventListener('resize', update, { passive: true });
+ update();
+})();
+</script>
+</body>
+</html>
